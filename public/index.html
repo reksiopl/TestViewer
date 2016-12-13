@@ -1,0 +1,174 @@
+<!doctype html>
+
+<!-- ASSIGN OUR ANGULAR MODULE -->
+<html ng-app="scotchTodo">
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
+
+	<title>Bieda Test Viewer 1.0</title>
+
+	<!-- SCROLLS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<style>
+		html 					{ overflow-y:scroll; }
+		body 					{ padding-top:0px; }
+		body { background: #E3E3E3 !important; }
+		#todo-list 				{ margin-bottom:10px; }
+		#todo-form 	 			{ margin-bottom:10px; }
+	</style>
+
+	<!-- SPELLS -->
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script><!-- load angular -->
+
+	<script src="js/controllers/main.js"></script> <!-- load up our controller -->
+	<script src="js/services/todos.js"></script> <!-- load our todo service -->
+	<script src="js/core.js"></script> <!-- load our main application -->
+	
+
+</head>
+<!-- SET THE CONTROLLER -->
+<body ng-controller="mainController" bgcolor="#E6E6FA">
+
+	<!-- HEADER AND TODO COUNT -->
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+			<img src="kompas.png"></img>
+				<a class="navbar-brand" href="">Bieda Test Viewer 1.0</a>
+			</div>
+			<ul class="nav navbar-nav">
+				<li><span class="label label-info navbar-right">{{ todos.length }}</span><a href="">Master</a></li>
+				<li class="disabled"><a href="">11.0.0.x</a></li>
+				<li class="disabled"> <a href="">1.0.0.x</a></li> 
+				<li class="disabled"><a href="">9.7.0.x</a></li> 
+			</ul>
+			
+		</div>
+	</nav>
+	<div ng-controller="jenkinsRestParser">
+	</div>
+
+	<div class="container">
+
+
+
+		<!-- TODO LIST -->
+		<div id="todo-list">
+			<div>
+
+				
+
+				<!-- LOOP OVER THE TODOS IN $scope.todos -->
+				<div ng-class="{'panel panel-success': todo.flowStable === 'True', 'panel panel-danger': todo.flowStable === 'False'}" ng-repeat="todo in todos">
+					<div class="panel-heading">
+						<h2>
+
+							<b>{{ todo.flowName }}</b>
+						</h2>
+					</div>	
+					<div class="panel-body" ng-repeat="job in todo.jobs">
+
+
+					<span class="mojaClassa" hidden>{{job.healthReport[0].description}}</span>
+
+						<b>Tests:</b> {{ job.testName }} <b>Configuration:</b> {{ job.displayName }} <span id="failedTests" class="label label-danger"></span> <span id="passedTests" class="label label-success"></span>
+
+
+					</div>
+					
+					<span class="glyphicon glyphicon-remove" ng-click="deleteTodo(todo._id)"></span>
+					<span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#addJobModal"></span>
+					<div class="modal" id="addJobModal" role="dialog">
+					<div class="modal-dialog">
+
+						<!-- Modal content-->
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">Add job from jenkins to existing flow</h4>
+							</div>
+							<div class="modal-body">
+								<input type="text" class="form-control input-lg text-center" placeholder="Please specify job name" ng-model="formData.job.jobName">
+								<input type="textbox" class="form-control input-lg text-center" placeholder="job" ng-model="formData.jobContent">
+
+							</div>
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-primary" data-dismiss="modal" ng-click="addJob()">Add job to {{ todo.flowName }}</button>
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+
+
+						<b onclick="populateTestResults()">Stable:</b> {{ todo.flowStable }}
+						
+
+					</div>
+			</div>
+				</div>
+
+
+
+				<p class="text-center" ng-show="loading">
+					<span class="fa fa-spinner fa-spin fa-3x"></span>
+				</p>
+
+			</div>
+		</div>
+
+		<button type="button" id="refreshButton" class="btn btn-info" onclick="populateTestResults()">Refresh</button>
+		<!-- FORM TO CREATE TODOS -->
+
+
+
+		<!-- <div id="todo-form" class="row">
+			<div>
+				<form>
+					<div class="form-group">
+
+						<input type="text" class="form-control input-lg text-center" placeholder="Please specify flow name" ng-model="formData.text">
+					</div>
+
+					<button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Add flow</button>
+				</form>
+			</div>
+		</div> -->
+
+		<div class="container">
+			<!-- Trigger the modal with a button -->
+			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">Add Flow</button>
+
+			<!-- Modal -->
+			<div class="modal" id="myModal" role="dialog">
+				<div class="modal-dialog">
+
+					<!-- Modal content-->
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Add Flow</h4>
+						</div>
+						<div class="modal-body">
+							<input type="text" class="form-control input-lg text-center" placeholder="Please specify flow name" ng-model="formData.text">
+							<input type="text" class="form-control input-lg text-center" placeholder="Stable?" ng-model="formData.stable">
+
+						</div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-primary" data-dismiss="modal" ng-click="createTodo()">Add flow</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			
+		</div>
+
+	</div>
+
+</body>
+</html>
